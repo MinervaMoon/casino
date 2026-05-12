@@ -30,6 +30,17 @@ from .models import PaqueteFichas, Perfil
 from .cart import Cart
 from datetime import timedelta
 
+def cart_remove(request, paquete_id):
+    cart = Cart(request)
+    paquete = get_object_or_404(PaqueteFichas, id=paquete_id)
+    cart.remove(paquete)
+    return redirect('casino:tienda')
+
+def cart_clear(request):
+    cart = Cart(request)
+    cart.clear()
+    return redirect('casino:tienda')
+
 @method_decorator(login_required, name='dispatch')
 class PortadaView(TemplateView):
     template_name = 'casino/portada.html'
