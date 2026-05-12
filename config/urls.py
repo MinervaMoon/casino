@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import RedirectView
 from casino.views import CustomLoginView
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='/casino/')),
     path('admin/', admin.site.urls),
     path('casino/', include('casino.urls')),
     path('login/', CustomLoginView.as_view(), name='login'),

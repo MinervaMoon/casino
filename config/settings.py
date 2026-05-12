@@ -143,5 +143,5 @@ LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
 CSRF_TRUSTED_ORIGINS = ['https://*.fly.dev']
-r.com']
+
 
