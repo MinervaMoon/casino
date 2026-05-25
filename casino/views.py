@@ -104,6 +104,7 @@ class CartRemoveView(View):
         return redirect('casino:tienda')
 
 from .forms import CompraFichasForm, ApuestaRuletaForm
+from .models import CompraTransaccion
 
 @method_decorator(login_required, name='dispatch')
 class ProcesarCompraView(View):
@@ -116,15 +117,29 @@ class ProcesarCompraView(View):
 
         try:
             form.validar_compra()
-            # Calcular total de fichas a sumar
-            total_fichas = sum(item['paquete'].cantidad_fichas * item['cantidad'] for item in cart)
             
-            # Actualizar perfil
+            total_fichas = 0
+            for item in cart:
+                paquete = item['paquete']
+                cantidad = item['cantidad']
+                precio_total_item = paquete.precio_dinero_ficticio * cantidad
+                fichas_item = paquete.cantidad_fichas * cantidad
+                
+                CompraTransaccion.objects.create(
+                    usuario=request.user,
+                    paquete=paquete,
+                    cantidad=cantidad,
+                    precio_unitario=paquete.precio_dinero_ficticio,
+                    total_pagado=precio_total_item,
+                    fichas_obtenidas=fichas_item
+                )
+                
+                total_fichas += fichas_item
+            
             perfil.dinero_ficticio -= total_a_pagar
             perfil.fichas += total_fichas
             perfil.save()
             
-            # Limpiar carrito
             cart.clear()
             messages.success(request, f"¡Compra realizada! Has obtenido {total_fichas} fichas.")
         except forms.ValidationError as e:

@@ -26,3 +26,20 @@ class PaqueteFichas(models.Model):
     class Meta:
         verbose_name = "Paquete de Fichas"
         verbose_name_plural = "Paquetes de Fichas"
+
+class CompraTransaccion(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='compras')
+    paquete = models.ForeignKey(PaqueteFichas, on_delete=models.CASCADE, related_name='ventas')
+    cantidad = models.PositiveIntegerField(default=1)
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    total_pagado = models.DecimalField(max_digits=12, decimal_places=2)
+    fichas_obtenidas = models.PositiveIntegerField()
+    fecha_compra = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Compra de {self.paquete.nombre} por {self.usuario.username}"
+
+    class Meta:
+        verbose_name = "Transacción de Compra"
+        verbose_name_plural = "Transacciones de Compras"
+        ordering = ['-fecha_compra']
